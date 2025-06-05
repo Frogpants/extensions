@@ -81,7 +81,7 @@
                             menu: 'AXIS_MENU'
                         },
                         ANGLE: {
-                            type: Scratch.ArgumentType.NUMBER,
+                            type: Scratch.ArgumentType.ANGLE,
                             defaultValue: 0
                         }
                     }
@@ -188,9 +188,19 @@
         }
 
         translate(args) {
-            pos.x += args.ONE;
-            pos.y += args.TWO;
-            pos.z += args.THREE;
+            pos.x += args.X;
+            pos.y += args.Y;
+            pos.z += args.Z;
+        }
+
+        rotate(args) {
+            if (args.AXIS_MENU === 'X') {
+                return pos.x;
+            } else if (args.AXIS_MENU === 'Y') {
+                return pos.y;
+            } else {
+                return pos.z;
+            }
         }
 
         transformations(args) {
