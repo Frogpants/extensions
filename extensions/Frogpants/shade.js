@@ -1,7 +1,14 @@
 
 (function(Scratch) {
     'use strict';
-    const vm = Scratch.vm
+    const vm = Scratch.vm;
+    var pos = {
+        x: 0,
+        y: 0,
+        z: 0
+    };
+    var res = 1;
+    var cameras = [];
     class RenderEngine{
         getInfo() {
             return {
@@ -10,7 +17,7 @@
             color1: '#84b7f6',
             color2: '#4689db',
             color3: '#356EB6',
-            docsURI: 'https://extensions.turbowarp.org/documentation/home',
+            docsURI: 'https://extensions.turbowarp.org/Frogpants/documentation/home',
             blocks: [
                 {
                     opcode: 'resolution',
@@ -18,65 +25,212 @@
                     text: 'res'
                 },
                 {
-                    opcode: 'shade',
-                    blockType: Scratch.BlockType.REPORTER,
-                    text: 'convert [TEXT] to [FORMAT]',
-                    arguments: {
-                        TEXT: {
-                            type: Scratch.ArgumentType.STRING,
-                            defaultValue: '#FF00FF'
-                        },
-                        FORMAT: {
-                            type: Scratch.ArgumentType.STRING,
-                            menu: 'FORMAT_MENU'
-                        }
-                    }
-                },
-                {
-                    opcode: 'wait',
+                    opcode: 'setscrres',
                     blockType: Scratch.BlockType.COMMAND,
-                    text: 'wait [NUM] seconds',
+                    text: 'set screen resolution to [NUM]',
                     arguments: {
                         NUM: {
                             type: Scratch.ArgumentType.NUMBER,
                             defaultValue: 1
-                        },
+                        }
                     }
                 },
                 {
-                    opcode: 'link',
-                    blockType: Scratch.BlockType.REPORTER,
-                    text: 'grab link [URL]',
+                    opcode: 'setshaderes',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'set shade resolution to [NUM]',
                     arguments: {
-                        URL: {
-                            type: Scratch.ArgumentType.STRING,
-                            defaultValue: 'https://extensions.turbowarp.org/hello.txt'
-                        },
+                        NUM: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 1
+                        }
                     }
-                }
+                },
+                '---',
+                {
+                    opcode: 'resettrans',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'reset transformations',
+                },
+                {
+                    opcode: 'translate',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'translate x:[X] y:[Y] z:[Z]',
+                    arguments: {
+                        X: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        Y: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        Z: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        }
+                    }
+                },
+                {
+                    opcode: 'rotate',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'rotate [AXIS] by [ANGLE] degrees',
+                    arguments: {
+                        AXIS: {
+                            type: Scratch.ArgumentType.STRING,
+                            menu: 'AXIS_MENU'
+                        },
+                        ANGLE: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        }
+                    }
+                },
+                {
+                    opcode: 'scale',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'scale by x:[WIDTH] y:[HEIGHT] z:[LENGTH]',
+                    arguments: {
+                        WIDTH: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 1
+                        },
+                        HEIGHT: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 1
+                        },
+                        LENGTH: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 1
+                        }
+                    }
+                },
+                {
+                    opcode: 'transformations',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'transformed [AXIS]',
+                    arguments: {
+                        AXIS: {
+                            type: Scratch.ArgumentType.STRING,
+                            menu: 'AXIS_MENU'
+                        }
+                    }
+                },
+                '---',
+                {
+                    opcode: 'newcam',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'create new camera [TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: Scratch.ArgumentType.STRING,
+                            defaultValue: 'camera1'
+                        }
+                    }
+                },
+                {
+                    opcode: 'remcam',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'delete camera [TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: Scratch.ArgumentType.STRING,
+                            defaultValue: 'camera1'
+                        }
+                    }
+                },
+                {
+                    opcode: 'camlst',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'all cameras',
+                },
+                {
+                    opcode: 'allcams',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'remove all cameras',
+                },
+                '---',
+                '---'
             ],
             menus: {
                 FORMAT_MENU: {
                     acceptReporters: true,
                     items: ['rgb', 'hex', 'base64']
+                },
+                AXIS_MENU: {
+                    acceptReporters: true,
+                    items: ['X', 'Y', 'Z']
                 }
             }
             };
         };
 
-        shade (args) {
-            if (args.FORMAT === 'rgb') {
-                return 'rgb';
-            } else if (args.FORMAT === 'hex') {
-                return 'hex';
+        // Rendering
+
+        resolution() {
+            return res;
+        }
+
+        setscrres(args) {
+            res = args.NUM;
+        }
+
+        setshaderes(args) {
+            res = args.NUM;
+        }
+
+        // Transformations
+
+        resttrans() {
+            pos.x = 0;
+            pos.y = 0;
+            pos.z = 0;
+        }
+
+        translate(args) {
+            pos.x += args.ONE;
+            pos.y += args.TWO;
+            pos.z += args.THREE;
+        }
+
+        transformations(args) {
+
+            if (args.AXIS_MENU === 'X') {
+                return pos.x;
+            } else if (args.AXIS_MENU === 'Y') {
+                return pos.y;
             } else {
-                return 'base64';
+                return pos.z;
             }
         }
 
-        resolution() {
-            return 1;
+        // Cameras
+
+        newcam(args) {
+            const inp = Scratch.Cast.toString(args.TEXT);
+            if (!cameras.includes(inp)) {
+                cameras.push(inp);
+            }
+            cameras = cameras;
         }
+
+        remcam(args) {
+            const index = cameras.indexOf(args.TEXT);
+            if (index > -1) {
+                cameras.splice(index, 1);
+            }
+            cameras = cameras;
+        }
+
+        camlst() {
+            return Scratch.Cast.toString(cameras);
+        }
+
+        allcams(args) {
+            cameras = [];
+        }
+
+        // Misc
 
         wait(args) {
             return new Promise((resolve, reject) => {
