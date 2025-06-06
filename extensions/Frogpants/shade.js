@@ -178,6 +178,50 @@
                     blockType: Scratch.BlockType.COMMAND,
                     text: 'render environment',
                 },
+                '---',
+                {
+                    opcode: 'rgb',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'r:[R] g:[G] b:[B]',
+                    arguments: {
+                        R: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        G: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        B: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        }
+                    }
+                },
+                {
+                    opcode: 'rgba',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'r:[R] g:[G] b:[B] a:[A]',
+                    disableMonitor: true,
+                    arguments: {
+                        R: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        G: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        B: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        A: {
+                            type: Scratch.ArgumentType.NUMBER,
+                            defaultValue: 0
+                        }
+                    }
+                },
                 '---'
             ],
             menus: {
@@ -299,6 +343,23 @@
             ctx.fillStyle = 'blue';
 
             ctx.fillRect(width,height,50,50);
+        }
+
+        // Color Code
+
+        rgb(args) {
+            const r = args.R * 256 * 256;
+            const g = args.G * 256;
+            const b = args.B;
+            return r + g + b;
+        }
+
+        rgba(args) {
+            const a = args.A * 256 * 256 * 256;
+            const r = args.R * 256 * 256;
+            const g = args.G * 256;
+            const b = args.B;
+            return a + r + g + b;
         }
     }
 
