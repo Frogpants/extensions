@@ -2,10 +2,22 @@
 (function(Scratch) {
     'use strict';
     const vm = Scratch.vm;
-    var pos = {
-        x: 0,
-        y: 0,
-        z: 0
+    var transform = {
+        pos: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        dir: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        scale: {
+            x: 0,
+            y: 0,
+            z: 0
+        }
     };
     var res = 1;
     var cameras = [];
@@ -74,7 +86,7 @@
                 {
                     opcode: 'rotate',
                     blockType: Scratch.BlockType.COMMAND,
-                    text: 'rotate [AXIS] by [ANGLE] degrees',
+                    text: 'rotate around [AXIS] by [ANGLE] degrees',
                     arguments: {
                         AXIS: {
                             type: Scratch.ArgumentType.STRING,
@@ -150,6 +162,22 @@
                     text: 'remove all cameras',
                 },
                 '---',
+                {
+                    opcode: 'rendertype',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'set render type to [TYPE]',
+                    arguments: {
+                        TYPE: {
+                            type: Scratch.ArgumentType.STRING,
+                            menu: 'RENDER_MENU'
+                        }
+                    }
+                },
+                {
+                    opcode: 'render',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'render environment',
+                },
                 '---'
             ],
             menus: {
@@ -160,6 +188,10 @@
                 AXIS_MENU: {
                     acceptReporters: true,
                     items: ['X', 'Y', 'Z']
+                },
+                RENDER_MENU: {
+                    acceptReporters: true,
+                    items: ['Raytracing', 'Raycasting', 'DDA Raycasting']
                 }
             }
             };
@@ -182,35 +214,41 @@
         // Transformations
 
         resttrans() {
-            pos.x = 0;
-            pos.y = 0;
-            pos.z = 0;
+            transform.pos.x = 0;
+            transform.pos.y = 0;
+            transform.pos.z = 0;
         }
 
         translate(args) {
-            pos.x += args.X;
-            pos.y += args.Y;
-            pos.z += args.Z;
+            transform.pos.x += args.X;
+            transform.pos.y += args.Y;
+            transform.pos.z += args.Z;
         }
 
         rotate(args) {
             if (args.AXIS_MENU === 'X') {
-                return pos.x;
+                transform.dir.x += args.ANGLE;
             } else if (args.AXIS_MENU === 'Y') {
-                return pos.y;
+                transform.dir.y += args.ANGLE;
             } else {
-                return pos.z;
+                transform.dir.z += args.ANGLE;
             }
+        }
+
+        scale(args) {
+            transform.scale.x += args.X;
+            transform.scale.y += args.Y;
+            transform.scale.z += args.Z;
         }
 
         transformations(args) {
 
             if (args.AXIS_MENU === 'X') {
-                return pos.x;
+                return transform.pos.x;
             } else if (args.AXIS_MENU === 'Y') {
-                return pos.y;
+                return transform.pos.y;
             } else {
-                return pos.z;
+                return transform.pos.z;
             }
         }
 
@@ -240,26 +278,27 @@
             cameras = [];
         }
 
-        // Misc
-
-        wait(args) {
-            return new Promise((resolve, reject) => {
-                const timeInMilliseconds = args.NUM * 1000;
-                setTimeout(() => {
-                    resolve();
-                }, timeInMilliseconds);
-            });
+        // Render Controls
+        rendertype(args) {
+            if (args.RENDER_MENU === 'Raytracing') {
+                return 'trace';
+            } else if (args.RENDER_MENU === 'Raycasting') {
+                return 'cast';
+            } else {
+                return 'dda';
+            }
         }
 
-        link(args) {
-            return fetch(args.URL)
-            .then((response) => {
-                return response.text();
-            })
-            .catch((error) => {
-                console.error(error);
-                return 'Uh oh! Something went wrong.';
-            });
+        render() {
+            const canvas = Scratch.vm.renderer.canvas;
+            const ctx = canvas.getContext('2d');
+
+            const width = canvas.width/2;
+            const height = canvas.height/-2;
+
+            ctx.fillStyle = 'blue';
+
+            ctx.fillRect(width,height,50,50);
         }
     }
 
