@@ -21,6 +21,13 @@
     };
     var res = 1;
     var cameras = [];
+    var meshes = [];
+    var rendercheck = false;
+    // var light = {
+    //     ambient: {
+    //         r: 0,
+    //     }
+    // };
     class RenderEngine{
         getInfo() {
             return {
@@ -29,6 +36,7 @@
             color1: '#84b7f6',
             color2: '#4689db',
             color3: '#356EB6',
+            demo: 'https://extensions.turbowarp.org/Frogpants/documentation/home',
             docsURI: 'https://extensions.turbowarp.org/Frogpants/documentation/home',
             blocks: [
                 {
@@ -154,12 +162,45 @@
                 {
                     opcode: 'camlst',
                     blockType: Scratch.BlockType.REPORTER,
-                    text: 'all cameras',
+                    text: 'all cameras'
                 },
                 {
                     opcode: 'allcams',
                     blockType: Scratch.BlockType.COMMAND,
-                    text: 'remove all cameras',
+                    text: 'remove all cameras'
+                },
+                '---',
+                {
+                    opcode: 'newmesh',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'create new mesh [TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: Scratch.ArgumentType.STRING,
+                            defaultValue: 'mesh1'
+                        }
+                    }
+                },
+                {
+                    opcode: 'remmesh',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'delete mesh [TEXT]',
+                    arguments: {
+                        TEXT: {
+                            type: Scratch.ArgumentType.STRING,
+                            defaultValue: 'mesh1'
+                        }
+                    }
+                },
+                {
+                    opcode: 'meshlst',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'all meshes'
+                },
+                {
+                    opcode: 'allmeshes',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'remove all meshes'
                 },
                 '---',
                 {
@@ -176,7 +217,27 @@
                 {
                     opcode: 'render',
                     blockType: Scratch.BlockType.COMMAND,
-                    text: 'render environment',
+                    text: 'render environment'
+                },
+                {
+                    opcode: 'drawcheck',
+                    blockType: Scratch.BlockType.BOOLEAN,
+                    text: 'is rendering?'
+                },
+                {
+                    opcode: 'setcolor',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'set [TYPE] color to [COLOR]',
+                    arguments: {
+                        TYPE: {
+                            type: Scratch.ArgumentType.STRING,
+                            menu: 'LIGHT_MENU'
+                        },
+                        COLOR: {
+                            type: Scratch.ArgumentType.COLOR,
+                            defaultValue:'#f68484'
+                        }
+                    }
                 },
                 '---',
                 {
@@ -202,7 +263,6 @@
                     opcode: 'rgba',
                     blockType: Scratch.BlockType.REPORTER,
                     text: 'r:[R] g:[G] b:[B] a:[A]',
-                    disableMonitor: true,
                     arguments: {
                         R: {
                             type: Scratch.ArgumentType.NUMBER,
@@ -219,7 +279,8 @@
                         A: {
                             type: Scratch.ArgumentType.NUMBER,
                             defaultValue: 0
-                        }
+                        },
+                        disableMonitor: true
                     }
                 },
                 '---'
@@ -236,12 +297,16 @@
                 RENDER_MENU: {
                     acceptReporters: true,
                     items: ['Raytracing', 'Raycasting', 'DDA Raycasting']
+                },
+                LIGHT_MENU: {
+                    acceptReporters: true,
+                    items: ['Ambient', 'Sunlight', 'Diffuse', 'Specular']
                 }
             }
             };
         };
 
-        // Rendering
+        // Resolution
 
         resolution() {
             return res;
@@ -286,7 +351,6 @@
         }
 
         transformations(args) {
-
             if (args.AXIS_MENU === 'X') {
                 return transform.pos.x;
             } else if (args.AXIS_MENU === 'Y') {
@@ -318,11 +382,38 @@
             return Scratch.Cast.toString(cameras);
         }
 
-        allcams(args) {
+        allcams() {
             cameras = [];
         }
 
+        // Meshes
+
+        newmesh(args) {
+            const inp = Scratch.Cast.toString(args.TEXT);
+            if (!cameras.includes(inp)) {
+                meshes.push(inp);
+            }
+            meshes = meshes;
+        }
+
+        remmeshes(args) {
+            const index = cameras.indexOf(args.TEXT);
+            if (index > -1) {
+                meshes.splice(index, 1);
+            }
+            meshes = meshes;
+        }
+
+        meshlst() {
+            return Scratch.Cast.toString(meshes);
+        }
+
+        allmeshes() {
+            meshes = [];
+        }
+
         // Render Controls
+
         rendertype(args) {
             if (args.RENDER_MENU === 'Raytracing') {
                 return 'trace';
@@ -334,7 +425,8 @@
         }
 
         render() {
-            const canvas = Scratch.vm.renderer.canvas;
+            rendercheck = true;
+            const canvas = vm.renderer.canvas;
             const ctx = canvas.getContext('2d');
 
             const width = canvas.width/2;
@@ -343,6 +435,20 @@
             ctx.fillStyle = 'blue';
 
             ctx.fillRect(width,height,50,50);
+        }
+
+        drawcheck() {
+            return rendercheck;
+        }
+
+        setcolor(args) {
+            if (args.LIGHT_MENU === 'Ambient') {
+                return 'trace';
+            } else if (args.LIGHT_MENU === 'Sunlight') {
+                return 'cast';
+            } else {
+                return 'dda';
+            }
         }
 
         // Color Code
@@ -355,10 +461,10 @@
         }
 
         rgba(args) {
-            const a = args.A * 256 * 256 * 256;
-            const r = args.R * 256 * 256;
-            const g = args.G * 256;
-            const b = args.B;
+            const a = args.A;
+            const r = args.R * 256 * 256 * 256;
+            const g = args.G * 256 * 256;
+            const b = args.B * 256;
             return a + r + g + b;
         }
     }
