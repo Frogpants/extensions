@@ -182,6 +182,17 @@
                     }
                 },
                 {
+                    opcode: 'staticmesh',
+                    blockType: Scratch.BlockType.COMMAND,
+                    text: 'create static [OBJECT] mesh',
+                    arguments: {
+                        OBJECT: {
+                            type: Scratch.ArgumentType.STRING,
+                            menu: 'OBJ_MENU'
+                        }
+                    }
+                },
+                {
                     opcode: 'remmesh',
                     blockType: Scratch.BlockType.COMMAND,
                     text: 'delete mesh [TEXT]',
@@ -283,6 +294,12 @@
                         disableMonitor: true
                     }
                 },
+                '---',
+                {
+                    opcode: 'rgba',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'r:[R] g:[G] b:[B] a:[A]',
+                },
                 '---'
             ],
             menus: {
@@ -301,6 +318,10 @@
                 LIGHT_MENU: {
                     acceptReporters: true,
                     items: ['Ambient', 'Sunlight', 'Diffuse', 'Specular']
+                },
+                OBJ_MENU: {
+                    acceptReporters: true,
+                    items: ['Cone', 'Cube', 'Cylinder', 'Plane', 'Pyramid', 'Sphere', 'Torus', 'Tube',]
                 }
             }
             };
@@ -335,9 +356,9 @@
         }
 
         rotate(args) {
-            if (args.AXIS_MENU === 'X') {
+            if (args.AXIS === 'X') {
                 transform.dir.x += args.ANGLE;
-            } else if (args.AXIS_MENU === 'Y') {
+            } else if (args.AXIS === 'Y') {
                 transform.dir.y += args.ANGLE;
             } else {
                 transform.dir.z += args.ANGLE;
@@ -351,9 +372,9 @@
         }
 
         transformations(args) {
-            if (args.AXIS_MENU === 'X') {
+            if (args.AXIS === 'X') {
                 return transform.pos.x;
-            } else if (args.AXIS_MENU === 'Y') {
+            } else if (args.AXIS === 'Y') {
                 return transform.pos.y;
             } else {
                 return transform.pos.z;
@@ -396,6 +417,28 @@
             meshes = meshes;
         }
 
+        staticmesh(args) {
+            if (args.OBJECT === 'Cone') {
+                return 'Cone';
+            } else if (args.OBJECT === 'Cube') {
+                return 'Cube';
+            } else if (args.OBJECT === 'Cylinder') {
+                return 'Cylinder';
+            } else if (args.OBJECT === 'Plane') {
+                return 'Plane';
+            } else if (args.OBJECT === 'Pyramid') {
+                return 'Pyramid';
+            } else if (args.OBJECT === 'Sphere') {
+                return 'Sphere';
+            } else if (args.OBJECT === 'Torus') {
+                return 'Torus';
+            } else if (args.OBJECT === 'Tube') {
+                return 'Tube';
+            } else {
+                return 'Unknown object';
+            }
+        }
+
         remmeshes(args) {
             const index = cameras.indexOf(args.TEXT);
             if (index > -1) {
@@ -415,9 +458,9 @@
         // Render Controls
 
         rendertype(args) {
-            if (args.RENDER_MENU === 'Raytracing') {
+            if (args.TYPE === 'Raytracing') {
                 return 'trace';
-            } else if (args.RENDER_MENU === 'Raycasting') {
+            } else if (args.TYPE === 'Raycasting') {
                 return 'cast';
             } else {
                 return 'dda';
