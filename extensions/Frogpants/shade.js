@@ -295,11 +295,6 @@
                     }
                 },
                 '---',
-                {
-                    opcode: 'rgba',
-                    blockType: Scratch.BlockType.REPORTER,
-                    text: 'r:[R] g:[G] b:[B] a:[A]',
-                },
                 '---'
             ],
             menus: {
