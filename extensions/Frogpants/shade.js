@@ -291,7 +291,7 @@
                             type: Scratch.ArgumentType.NUMBER,
                             defaultValue: 0
                         },
-                        disableMonitor: true
+                        hideFromPalette: true
                     }
                 },
                 '---',
