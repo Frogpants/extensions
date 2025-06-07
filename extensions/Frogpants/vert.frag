@@ -7,6 +7,6 @@ uniform mat4 projectionMatrix;
 varying vec3 vNormal;
 
 void main() {
-    vNormal = normal; // Pass the surface normal to the fragment shader
+    vNormal = normal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }

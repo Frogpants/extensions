@@ -266,37 +266,13 @@
                         }
                     }
                 },
-                {
-                    opcode: 'rgba',
-                    blockType: Scratch.BlockType.REPORTER,
-                    text: 'r:[R] g:[G] b:[B] a:[A]',
-                    arguments: {
-                        R: {
-                            type: Scratch.ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        G: {
-                            type: Scratch.ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        B: {
-                            type: Scratch.ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        A: {
-                            type: Scratch.ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        hideFromPalette: true
-                    }
-                },
                 '---',
                 '---'
             ],
             menus: {
                 FORMAT_MENU: {
                     acceptReporters: true,
-                    items: ['rgb', 'hex', 'base64']
+                    items: ['rgb', 'hex']
                 },
                 AXIS_MENU: {
                     acceptReporters: true,
@@ -312,7 +288,7 @@
                 },
                 OBJ_MENU: {
                     acceptReporters: true,
-                    items: ['Cone', 'Cube', 'Cylinder', 'Plane', 'Pyramid', 'Sphere', 'Torus', 'Tube',]
+                    items: ['Cone', 'Cube', 'Cylinder', 'Plane', 'Pyramid', 'Sphere', 'Torus', 'Tube']
                 }
             }
             };
@@ -492,14 +468,6 @@
             const g = args.G * 256;
             const b = args.B;
             return r + g + b;
-        }
-
-        rgba(args) {
-            const a = args.A;
-            const r = args.R * 256 * 256 * 256;
-            const g = args.G * 256 * 256;
-            const b = args.B * 256;
-            return a + r + g + b;
         }
     }
 
