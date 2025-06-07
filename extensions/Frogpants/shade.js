@@ -210,6 +210,22 @@
                 },
                 '---',
                 {
+                    opcode: 'texlink',
+                    blockType: Scratch.BlockType.REPORTER,
+                    text: 'set mesh [TEXT] texture to [IMG]',
+                    arguments: {
+                        TEXT: {
+                            type: Scratch.ArgumentType.STRING,
+                            defaultValue: 'mesh1'
+                        },
+                        IMG: {
+                            type: Scratch.ArgumentType.STRING,
+                            defaultValue: 'https://extensions.turbowarp.org'
+                        }
+                    }
+                },
+                '---',
+                {
                     opcode: 'rendertype',
                     blockType: Scratch.BlockType.COMMAND,
                     text: 'set render type to [TYPE]',
