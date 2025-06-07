@@ -23,11 +23,6 @@
     var cameras = [];
     var meshes = [];
     var rendercheck = false;
-    // var light = {
-    //     ambient: {
-    //         r: 0,
-    //     }
-    // };
     class RenderEngine{
         getInfo() {
             return {
@@ -233,7 +228,8 @@
                 {
                     opcode: 'drawcheck',
                     blockType: Scratch.BlockType.BOOLEAN,
-                    text: 'is rendering?'
+                    text: 'is rendering?',
+                    disableMonitor: true
                 },
                 {
                     opcode: 'setcolor',
@@ -464,15 +460,15 @@
 
         render() {
             rendercheck = true;
-            const canvas = vm.renderer.canvas;
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
+            if (!ctx) return;
 
-            const width = canvas.width/2;
-            const height = canvas.height/-2;
-
-            ctx.fillStyle = 'blue';
-
-            ctx.fillRect(width,height,50,50);
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(100, 100, 50, 0, Math.PI * 2);
+            ctx.fill();
         }
 
         drawcheck() {
