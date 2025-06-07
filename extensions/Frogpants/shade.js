@@ -247,26 +247,6 @@
                     }
                 },
                 '---',
-                {
-                    opcode: 'rgb',
-                    blockType: Scratch.BlockType.REPORTER,
-                    text: 'r:[R] g:[G] b:[B]',
-                    arguments: {
-                        R: {
-                            type: Scratch.ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        G: {
-                            type: Scratch.ArgumentType.NUMBER,
-                            defaultValue: 0
-                        },
-                        B: {
-                            type: Scratch.ArgumentType.NUMBER,
-                            defaultValue: 0
-                        }
-                    }
-                },
-                '---',
                 '---'
             ],
             menus: {
@@ -459,15 +439,6 @@
             } else {
                 return 'dda';
             }
-        }
-
-        // Color Code
-
-        rgb(args) {
-            const r = args.R * 256 * 256;
-            const g = args.G * 256;
-            const b = args.B;
-            return r + g + b;
         }
     }
 
