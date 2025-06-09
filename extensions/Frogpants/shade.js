@@ -1,7 +1,156 @@
 
 (function(Scratch) {
     'use strict';
+    if (!Scratch.extensions.unsandboxed) {
+        throw new Error("Pen+ must be run unsandboxed");
+    }
+
     const vm = Scratch.vm;
+    const runtime = vm.runtime;
+    const canvas = runtime.renderer.canvas;
+    const gl = runtime.renderer._gl;
+
+    const EXAMPLE_IMAGE = "https://extensions.turbowarp.org/dango.png";
+
+    gl.enable(gl.BLEND);
+    gl.blendEquation(gl.FUNC_ADD);
+    gl.blendFunc(gl.ONE_MINUS_CONSTANT_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    function createShader(gl, type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.error(gl.getShaderInfoLog(shader));
+            gl.deleteShader(shader);
+            return null;
+        }
+        return shader;
+        }
+
+    function createProgram(gl, vsSource, fsSource) {
+        const vs = createShader(gl, gl.VERTEX_SHADER, vsSource);
+        const fs = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
+        const program = gl.createProgram();
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            console.error(gl.getProgramInfoLog(program));
+            return null;
+        }
+        return program;
+    }
+
+    async function loadShaderFile(path) {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`Failed to load shader: ${path}`);
+        return await response.text();
+    }
+
+    const vertexShaderSource = `
+        attribute vec3 position;
+        attribute vec3 normal;
+
+        uniform mat4 modelViewMatrix;
+        uniform mat4 projectionMatrix;
+
+        varying vec3 vNormal;
+
+        void main() {
+            vNormal = normal;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `;
+    const fragmentShaderSource = `
+        precision mediump float;
+
+        varying vec3 vNormal;
+        uniform vec3 lightDir;
+        uniform vec3 baseColor;
+
+        void main() {
+            vec3 N = normalize(vNormal);
+            vec3 L = normalize(lightDir);
+
+            float diff = max(dot(N, L), 0.0);
+
+            vec3 shadedColor = baseColor * diff;
+
+            gl_FragColor = vec4(shadedColor, 1.0);
+        }
+    `;
+
+    const program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
+    
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    
+    const positions = [
+        -1, -1,
+        1, -1,
+        -1,  1,
+        1,  1
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    const texcoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+    const texcoords = [
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1
+    ];
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
+
+    function loadTexture(gl, url, callback) {
+        const texture = gl.createTexture();
+        const image = new Image();
+        image.crossOrigin = "";
+        image.src = url;
+        image.onload = () => {
+            gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.texImage2D(
+            gl.TEXTURE_2D, 0, gl.RGBA,
+            gl.RGBA, gl.UNSIGNED_BYTE, image
+            );
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            callback(texture);
+        };
+    }
+
+    function render(texture) {
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.useProgram(program);
+
+        const positionLocation = gl.getAttribLocation(program, "a_position");
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.enableVertexAttribArray(positionLocation);
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+        const texcoordLocation = gl.getAttribLocation(program, "a_texcoord");
+        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+        gl.enableVertexAttribArray(texcoordLocation);
+        gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+
+        const samplerLocation = gl.getUniformLocation(program, "u_image");
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.uniform1i(samplerLocation, 0);
+
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    loadTexture(gl, "https://extensions.turbowarp.org/dango.png", (texture) => {
+        render(texture);
+    });
+
     var transform = {
         pos: {
             x: 0,
@@ -19,10 +168,12 @@
             z: 0
         }
     };
+    
     var res = 1;
     var cameras = [];
     var meshes = [];
     var rendercheck = false;
+
     class RenderEngine{
         getInfo() {
             return {
