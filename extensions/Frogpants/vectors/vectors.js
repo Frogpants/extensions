@@ -34,6 +34,13 @@
         return [x, y, z];
     };
 
+    function checkLength(v1, v2) {
+        if (v1.length === v2.length) {
+            return true;
+        }
+        return false;
+    }
+
     class VectorsExtension {
         getInfo() {
             return {
@@ -334,7 +341,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var result = 0;
-            if (v1.length != v2.length) {
+            if (checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -349,6 +356,9 @@
         cross(args) {
             const a = JSON.parse(args.VECTOR1);
             const b = JSON.parse(args.VECTOR2);
+            if (checkLength(a, b)) {
+                return "Invalid Vector Types";
+            }
             return JSON.stringify([
                 a[1] * b[2] - a[2] * b[1],
                 a[2] * b[0] - a[0] * b[2],
@@ -369,7 +379,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (v1.length != v2.length) {
+            if (checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -383,7 +393,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (v1.length != v2.length) {
+            if (checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -397,7 +407,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (v1.length != v2.length) {
+            if (checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -411,7 +421,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (v1.length != v2.length) {
+            if (checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
