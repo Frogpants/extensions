@@ -402,7 +402,12 @@
         }
 
         setCamRot(args) {
-            rotation = JSON.parse(args.VECTOR);
+            if (JSON.parse(args.VECTOR).length > 2) {
+                rotation = JSON.parse(args.VECTOR);
+            } else {
+                rotation = JSON.parse(args.VECTOR);
+                rotation.push(0);
+            }
         }
 
         getCamPos(args) {
