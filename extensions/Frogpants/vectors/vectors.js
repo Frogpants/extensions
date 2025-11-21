@@ -24,6 +24,7 @@
     var f = Scratch.vm.runtime.stageWidth/Math.tan(rads/2);
 
     var near = 0.1;
+    const axis = ['x', 'y', 'z', 'w'];
 
 
     function simpleVec2(x, y) {
@@ -120,6 +121,21 @@
                             FORMAT: {
                                 type: Scratch.ArgumentType.STRING,
                                 menu: 'VECTOR_TYPES'
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'select',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'get [AXIS] of vector [VECTOR]',
+                        arguments: {
+                            AXIS: {
+                                type: Scratch.ArgumentType.STRING,
+                                menu: 'AXIS'
+                            },
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
                             }
                         }
                     },
@@ -314,7 +330,12 @@
                         items: ['2D', '3D', '4D']
                     },
                     SPRITES: {
+                        acceptReporters: true,
                         items: "getSpriteNames"
+                    },
+                    AXIS: {
+                        acceptReporters: true,
+                        items: axis
                     }
                 }
             }; 
@@ -373,6 +394,16 @@
         base(args) {
             const size = Scratch.Cast.toNumber(args.FORMAT[0]);
             return JSON.stringify(Array(size).fill(args.NUM));
+        }
+
+        select(args) {
+            const v = JSON.parse(args.VECTOR);
+            const id = axis.indexOf(args.AXIS);
+            if (id+1 > v.length) {
+                return "Axis Does Not Exist";
+            }
+
+            return JSON.stringify(v[id]);
         }
 
         add(args) {
