@@ -1,3 +1,9 @@
+// Name: Vectors
+// ID: frogpantsVectors
+// Description: Adds vectors and vector math for 2D, 3D, and 4D.
+// By: Frogpants <https://scratch.mit.edu/users/XxFrogpantsxX/>
+// License: MIT
+
 (function(Scratch) {
     'use strict';
     const makeLabel = (text) => ({
@@ -36,7 +42,7 @@
                 color1: '#5b72dbff',
                 color2: '#4556a3ff',
                 color3: '#283261ff',
-                docsURI: 'https://docs.turbowarp.org/extensions/Frogpants/vectors/vectors-extension.md',
+                docsURI: 'https://extensions.turbowarp.org/Frogpants/Vectors',
                 blocks: [
                     makeLabel("General Functions"),
                     {
@@ -69,6 +75,21 @@
                         opcode: 'cross',
                         blockType: Scratch.BlockType.REPORTER,
                         text: 'cross product of [VECTOR1] and [VECTOR2]',
+                        arguments: {
+                            VECTOR1: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
+                            },
+                            VECTOR2: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[3,4,5]"
+                            },
+                        }
+                    },
+                    {
+                        opcode: 'distance',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'distance between [VECTOR1] and [VECTOR2]',
                         arguments: {
                             VECTOR1: {
                                 type: Scratch.ArgumentType.STRING,
@@ -335,6 +356,10 @@
             ]);
         }
 
+        distance(args) {
+            return this.magnitude({VECTOR: this.subtract(args)});
+        }
+
         base(args) {
             const size = Scratch.Cast.toNumber(args.FORMAT[0]);
             return JSON.stringify(Array(size).fill(args.NUM));
@@ -350,7 +375,6 @@
 
             for (let i = 0; i < v1.length; i++) {
                 r.push(v1[i]+v2[i]);
-                console.log("i")
             }
             return JSON.stringify(r);
         }
