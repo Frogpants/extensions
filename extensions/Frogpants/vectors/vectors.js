@@ -26,6 +26,14 @@
     var near = 0.1;
     const axis = ['x', 'y', 'z', 'w'];
 
+    function randVal(a, b) {
+        if (a === Math.floor(a)) {
+            if (b === Math.floor(b)) {
+                return Math.floor(Math.random() * (b-a+1) + a);
+            }
+        }
+        return Math.random() * (b-a) + a;
+    };
 
     function simpleVec2(x, y) {
         return [x, y];
@@ -40,7 +48,43 @@
             return true;
         }
         return false;
-    }
+    };
+
+    var sinLst = [];
+    var cosLst = [];
+    var tanLst = [];
+
+    function genTrigVals(s) {
+        const increment = s;
+        for (let i = 0; i < 360/s; i ++) {
+            const rad = (i*increment*Math.PI)/180;
+            sinLst.push(Math.sin(rad));
+            cosLst.push(Math.cos(rad));
+            tanLst.push(Math.tan(rad));
+        }
+    };
+    genTrigVals(1);
+
+    function sin(a) {
+        const rad = (a*Math.PI)/180;
+        return Math.sin(rad)
+        // a = ((a % 360) + 360) % 360;
+        // return sinLst[Math.floor(sinLst.length*a)]
+    };
+
+    function cos(a) {
+        const rad = (a*Math.PI)/180;
+        return Math.sin(rad)
+        // a = ((a % 360) + 360) % 360;
+        // return cosLst[Math.floor(cosLst.length*a)]
+    };
+
+    function tan(a) {
+        const rad = (a*Math.PI)/180;
+        return Math.sin(rad)
+        // a = ((a % 360) + 360) % 360;
+        // return tanLst[Math.floor(tanLst.length*a)]
+    };
 
     class VectorsExtension {
         getInfo() {
@@ -52,7 +96,7 @@
                 color3: '#283261ff',
                 docsURI: 'https://extensions.turbowarp.org/Frogpants/Vectors',
                 blocks: [
-                    makeLabel("General Functions"),
+                    makeLabel("Vector Functions"),
                     {
                         opcode: 'magnitude',
                         blockType: Scratch.BlockType.REPORTER,
@@ -109,6 +153,7 @@
                             },
                         }
                     },
+                    "---",
                     {
                         opcode: 'base',
                         blockType: Scratch.BlockType.REPORTER,
@@ -140,7 +185,7 @@
                         }
                     },
                     "---",
-                    makeLabel("General Equations"),
+                    makeLabel("General Operations"),
                     {
                         opcode: 'add',
                         blockType: Scratch.BlockType.REPORTER,
@@ -153,7 +198,7 @@
                             VECTOR2: {
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[4,5,6]"
-                            },
+                            }
                         }
                     },
                     {
@@ -168,7 +213,7 @@
                             VECTOR2: {
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[4,5,6]"
-                            },
+                            }
                         }
                     },
                     {
@@ -183,7 +228,7 @@
                             VECTOR2: {
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[4,5,6]"
-                            },
+                            }
                         }
                     },
                     {
@@ -198,9 +243,73 @@
                             VECTOR2: {
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[4,5,6]"
-                            },
+                            }
                         }
-                    },"---",
+                    },
+                    "---",
+                    {
+                        opcode: 'random',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'pick random [A] to [B] with vector [FORMAT]',
+                        arguments: {
+                            A: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 1
+                            },
+                            B: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 10
+                            },
+                            FORMAT: {
+                                type: Scratch.ArgumentType.STRING,
+                                menu: 'VECTOR_TYPES'
+                            }
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'module',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: '[VECTOR1] mod [VECTOR2]',
+                        arguments: {
+                            VECTOR1: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1,2,3]"
+                            },
+                            VECTOR2: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[4,5,6]"
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'round',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'round [VECTOR]',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
+                            }
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'operation',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: '[OPERATIONS] of [VECTOR]',
+                        arguments: {
+                            OPERATIONS: {
+                                type: Scratch.ArgumentType.STRING,
+                                menu: "OPERATIONS"
+                            },
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
+                            }
+                        }
+                    },
+                    "---",
                     makeLabel("Camera"),
                     {
                         opcode: 'setCamPos',
@@ -296,7 +405,8 @@
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[0,0,0]"
                             }
-                        }
+                        },
+                        disableMonitor: true
                     },
                     "---",
                     makeLabel("4D Vector"),
@@ -336,6 +446,10 @@
                     AXIS: {
                         acceptReporters: true,
                         items: axis
+                    },
+                    OPERATIONS: {
+                        acceptReporters: false,
+                        items: ['abs', 'floor', 'ceiling', 'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'e^', '10^']
                     }
                 }
             }; 
@@ -362,7 +476,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var result = 0;
-            if (checkLength(v1, v2)) {
+            if (!checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -377,7 +491,7 @@
         cross(args) {
             const a = JSON.parse(args.VECTOR1);
             const b = JSON.parse(args.VECTOR2);
-            if (checkLength(a, b)) {
+            if (!checkLength(a, b)) {
                 return "Invalid Vector Types";
             }
             return JSON.stringify([
@@ -410,7 +524,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (checkLength(v1, v2)) {
+            if (!checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -424,7 +538,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (checkLength(v1, v2)) {
+            if (!checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -438,7 +552,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (checkLength(v1, v2)) {
+            if (!checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -452,7 +566,7 @@
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
             var r = [];
-            if (checkLength(v1, v2)) {
+            if (!checkLength(v1, v2)) {
                 return "Invalid Vector Types";
             }
 
@@ -460,6 +574,49 @@
                 r.push(v1[i]/v2[i]);
             }
             return JSON.stringify(r);
+        }
+
+        random(args) {
+            const size = Scratch.Cast.toNumber(args.FORMAT[0]);
+            var v = [];
+            for (let i = 0; i < size; i++) {
+                v.push(randVal(args.A, args.B));
+            }
+            return JSON.stringify(v);
+        }
+
+        module(args) {
+            const v1 = JSON.parse(args.VECTOR1);
+            const v2 = JSON.parse(args.VECTOR2);
+            var r = [];
+            if (!checkLength(v1, v2)) {
+                return "Invalid Vector Types";
+            }
+
+            for (let i = 0; i < v1.length; i++) {
+                r.push(v1[i]%v2[i]);
+            }
+            return JSON.stringify(r);
+        }
+
+        round(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                r.push(Math.round(v[i]));
+            }
+            return JSON.stringify(r);
+        }
+
+        operation(args) {
+            const v = JSON.parse(args.VECTOR);
+            var lst = [];
+            for (let i = 0; i < v.length; i++) {
+                const r = eval("Math." + args.OPERATIONS + "(" + v[i].toString() + ")");
+                lst.push(r);
+            }
+            return JSON.stringify(lst);
         }
 
         setCamPos(args) {
@@ -505,6 +662,10 @@
         p3Dto2D(args) {
             const v = JSON.parse(args.V3);
             var pos = simpleVec3(v[0]-camera[0], v[1]-camera[1], v[2]-camera[2]);
+            console.log(pos);
+            pos = simpleVec3(pos[0]*cos(rotation[0])-pos[2]*sin(rotation[0]), pos[1], pos[0]*sin(rotation[0])+pos[2]*cos(rotation[0]));
+            pos = simpleVec3(pos[0], pos[1]*cos(rotation[1])-pos[2]*sin(rotation[1]), pos[1]*sin(rotation[1])+pos[2]*cos(rotation[1]));
+            pos = simpleVec3(pos[0]*cos(rotation[2])-pos[1]*sin(rotation[2]), pos[0]*sin(rotation[2])+pos[1]*cos(rotation[2]), pos[2]);
             const invZ = 1 / Math.max(near, pos[2]);
             console.log(camera);
             pos = simpleVec2(f*pos[0]*invZ, f*pos[1]*invZ);
