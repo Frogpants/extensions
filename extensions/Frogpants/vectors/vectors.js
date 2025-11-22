@@ -612,8 +612,12 @@
         operation(args) {
             const v = JSON.parse(args.VECTOR);
             var lst = [];
+            var op = args.OPERATIONS;
+            if (args.OPERATIONS === "e^") {
+                op = 
+            }
             for (let i = 0; i < v.length; i++) {
-                const r = eval("Math." + args.OPERATIONS + "(" + v[i].toString() + ")");
+                const r = eval("Math." + op + "(" + v[i].toString() + ")");
                 lst.push(r);
             }
             return JSON.stringify(lst);
