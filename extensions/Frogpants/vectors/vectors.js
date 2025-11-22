@@ -43,6 +43,14 @@
         return [x, y, z];
     };
 
+    function simpleMagnitude(lst) {
+        let sum = 0;
+        lst.forEach(num => {
+            sum += num*num;
+        });
+        return Math.sqrt(sum);
+    }
+
     function checkLength(v1, v2) {
         if (v1.length === v2.length) {
             return true;
@@ -136,6 +144,17 @@
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[3,4,5]"
                             },
+                        }
+                    },
+                    {
+                        opcode: 'normal',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'normal of [VECTOR]',
+                        arguments: {
+                            VECTOR1: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
+                            }
                         }
                     },
                     {
@@ -499,6 +518,16 @@
                 a[2] * b[0] - a[0] * b[2],
                 a[0] * b[1] - a[1] * b[0]
             ]);
+        }
+
+        normal(args) {
+            const v = JSON.parse(args.VECTOR);
+            const m = simpleMagnitude(v);
+            var r = [];
+            for (let i = 0; i < v.length; i++) {
+                r.push(v[i]/m);
+            }
+            return r;
         }
 
         distance(args) {
