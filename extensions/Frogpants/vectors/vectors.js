@@ -204,6 +204,35 @@
                         }
                     },
                     "---",
+                    {
+                        opcode: 'typeCheck',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: 'is [VECTOR] a [FORMAT] vector?',
+                        arguments: {
+                            
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
+                            },
+                            FORMAT: {
+                                type: Scratch.ArgumentType.STRING,
+                                menu: 'VECTOR_TYPES'
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'vectorCheck',
+                        blockType: Scratch.BlockType.BOOLEAN,
+                        text: 'is [VECTOR] a vector?',
+                        arguments: {
+                            
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
+                            }
+                        }
+                    },
+                    "---",
                     makeLabel("General Operations"),
                     {
                         opcode: 'add',
@@ -549,6 +578,27 @@
             return JSON.stringify(v[id]);
         }
 
+        typeCheck(args) {
+            const size = Scratch.Cast.toNumber(args.FORMAT[0]);
+            const v = JSON.parse(args.VECTOR);
+
+            if (size === v.length) {
+                return true;
+            }
+
+            return false;
+        }
+
+        vectorCheck(args) {
+            const v = JSON.parse(args.VECTOR);
+
+            if (v.isArray()) {
+                return true;
+            }
+
+            return false;
+        }
+
         add(args) {
             const v1 = JSON.parse(args.VECTOR1);
             const v2 = JSON.parse(args.VECTOR2);
@@ -643,7 +693,7 @@
             var lst = [];
             var op = args.OPERATIONS;
             if (args.OPERATIONS === "e^") {
-                op = 
+                op = "exp"
             }
             for (let i = 0; i < v.length; i++) {
                 const r = eval("Math." + op + "(" + v[i].toString() + ")");
