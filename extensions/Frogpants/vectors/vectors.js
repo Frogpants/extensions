@@ -550,13 +550,9 @@
         }
 
         normal(args) {
-            const v = JSON.parse(args.VECTOR);
-            const m = simpleMagnitude(v);
-            var r = [];
-            for (let i = 0; i < v.length; i++) {
-                r.push(v[i]/m);
-            }
-            return r;
+            const v = args.Vector
+            const size = Scratch.Cast.toString(JSON.parse(v).length) + 'D';
+            return this.divide({v,this.base({this.magnitude({v}), size})});
         }
 
         distance(args) {
