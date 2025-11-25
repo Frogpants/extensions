@@ -62,6 +62,20 @@
     var cosLst = [];
     var tanLst = [];
 
+    const trig = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan'];
+
+    function toRadians(angle) {
+        return (angle * Math.PI) / 180;
+    };
+
+    function toRadiansVector(v) {
+        for (let i = 0; i < v.length; i++) {
+            v[i] = toRadians(v[i]);
+        }
+
+        return v;
+    };
+
     function genTrigVals(s) {
         const increment = s;
         for (let i = 0; i < 360/s; i ++) {
@@ -74,21 +88,21 @@
     genTrigVals(1);
 
     function sin(a) {
-        const rad = (a*Math.PI)/180;
+        const rad = toRadians(a);
         return Math.sin(rad)
         // a = ((a % 360) + 360) % 360;
         // return sinLst[Math.floor(sinLst.length*a)]
     };
 
     function cos(a) {
-        const rad = (a*Math.PI)/180;
+        const rad = toRadians(a);
         return Math.sin(rad)
         // a = ((a % 360) + 360) % 360;
         // return cosLst[Math.floor(cosLst.length*a)]
     };
 
     function tan(a) {
-        const rad = (a*Math.PI)/180;
+        const rad = toRadians(a);
         return Math.sin(rad)
         // a = ((a % 360) + 360) % 360;
         // return tanLst[Math.floor(tanLst.length*a)]
@@ -149,12 +163,12 @@
                     {
                         opcode: 'normal',
                         blockType: Scratch.BlockType.REPORTER,
-                        text: 'normal of [VECTOR]',
+                        text: 'normalize [VECTOR]',
                         arguments: {
-                            VECTOR1: {
+                            VECTOR: {
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[0,0,0]"
-                            }
+                            },
                         }
                     },
                     {
@@ -203,6 +217,25 @@
                             }
                         }
                     },
+                    {
+                        opcode: 'setDimension',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'set [AXIS] of vector [VECTOR] to [NUM]',
+                        arguments: {
+                            AXIS: {
+                                type: Scratch.ArgumentType.STRING,
+                                menu: 'AXIS'
+                            },
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,0,0]"
+                            },
+                            NUM: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 1
+                            }
+                        }
+                    },
                     "---",
                     {
                         opcode: 'typeCheck',
@@ -237,7 +270,7 @@
                     {
                         opcode: 'add',
                         blockType: Scratch.BlockType.REPORTER,
-                        text: 'add vectors [VECTOR1] + [VECTOR2]',
+                        text: '[VECTOR1] + [VECTOR2]',
                         arguments: {
                             VECTOR1: {
                                 type: Scratch.ArgumentType.STRING,
@@ -252,7 +285,7 @@
                     {
                         opcode: 'subtract',
                         blockType: Scratch.BlockType.REPORTER,
-                        text: 'subtract vectors [VECTOR1] - [VECTOR2]',
+                        text: '[VECTOR1] - [VECTOR2]',
                         arguments: {
                             VECTOR1: {
                                 type: Scratch.ArgumentType.STRING,
@@ -267,7 +300,7 @@
                     {
                         opcode: 'multiply',
                         blockType: Scratch.BlockType.REPORTER,
-                        text: 'multiply vectors [VECTOR1] * [VECTOR2]',
+                        text: '[VECTOR1] * [VECTOR2]',
                         arguments: {
                             VECTOR1: {
                                 type: Scratch.ArgumentType.STRING,
@@ -282,7 +315,7 @@
                     {
                         opcode: 'divide',
                         blockType: Scratch.BlockType.REPORTER,
-                        text: 'divide vectors [VECTOR1] / [VECTOR2]',
+                        text: '[VECTOR1] / [VECTOR2]',
                         arguments: {
                             VECTOR1: {
                                 type: Scratch.ArgumentType.STRING,
@@ -358,6 +391,165 @@
                         }
                     },
                     "---",
+                    makeLabel("Advanced Operations"),
+                    {
+                        opcode: 'power',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: '[VECTOR1] ^ [VECTOR2]',
+                        arguments: {
+                            VECTOR1: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1,2,3]"
+                            },
+                            VECTOR2: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[4,5,6]"
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'root',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: '[VECTOR1] √ [VECTOR2]',
+                        arguments: {
+                            VECTOR1: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1,2,3]"
+                            },
+                            VECTOR2: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[4,5,6]"
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'negative',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: '- [VECTOR]',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1,2,3]"
+                            }
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'sign',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'sign of [VECTOR]',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[-10,0,10]"
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'clamp',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'clamp [VECTOR] between [A] and [B]',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1,2,3]"
+                            },
+                            A: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 0
+                            },
+                            B: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 100
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'map',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'map [VECTOR] from range [A] - [B] to range [C] - [D]',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1,2,3]"
+                            },
+                            A: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 0
+                            },
+                            B: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 100
+                            },
+                            C: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 0
+                            },
+                            D: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 1
+                            }
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'truncOf',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'trunc of [VECTOR] with [NUM] digits after dot',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1.2,3.45,6.789]"
+                            },
+                            NUM: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 1
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'trunc',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'trunc of [VECTOR]',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1.2,3.45,6.789]"
+                            }
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'logOf',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'log of [VECTOR] with base [NUM]',
+                        arguments: {
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[1.2,3.45,6.789]"
+                            },
+                            NUM: {
+                                type: Scratch.ArgumentType.NUMBER,
+                                defaultValue: 10
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'trueTrig',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'true [TRIG] [VECTOR]',
+                        arguments: {
+                            TRIG: {
+                                type: Scratch.ArgumentType.STRING,
+                                menu: "TRIG"
+                            },
+                            VECTOR: {
+                                type: Scratch.ArgumentType.STRING,
+                                defaultValue: "[0,1.047167,0.523583]"
+                            }
+                        }
+                    },
+                    "---",
                     makeLabel("Camera"),
                     {
                         opcode: 'setCamPos',
@@ -411,18 +603,20 @@
                     {
                         opcode: 'goto2D',
                         blockType: Scratch.BlockType.COMMAND,
-                        text: 'set position of [MENU] to vec2 [VECTOR]',
+                        text: 'set position to vec2 [VECTOR]',
                         arguments: {
                             VECTOR: {
                                 type: Scratch.ArgumentType.STRING,
                                 defaultValue: "[0,0]"
-                            },
-                            MENU: {
-                                type: Scratch.ArgumentType.STRING,
-                                menu: 'SPRITES'
                             }
                         }
                     },
+                    {
+                        opcode: 'pos',
+                        blockType: Scratch.BlockType.REPORTER,
+                        text: 'position'
+                    },
+                    "---",
                     "---",
                     makeLabel("3D Vector"),
                     {
@@ -487,10 +681,10 @@
                         acceptReporters: true,
                         items: ['2D', '3D', '4D']
                     },
-                    SPRITES: {
-                        acceptReporters: true,
-                        items: "getSpriteNames"
-                    },
+                    // SPRITES: {
+                    //     acceptReporters: true,
+                    //     items: "getSpriteNames"
+                    // },
                     AXIS: {
                         acceptReporters: true,
                         items: axis
@@ -498,6 +692,10 @@
                     OPERATIONS: {
                         acceptReporters: false,
                         items: ['abs', 'floor', 'ceiling', 'sqrt', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'ln', 'log', 'e^', '10^']
+                    },
+                    TRIG: {
+                        acceptReporters: true,
+                        items: trig
                     }
                 }
             }; 
@@ -508,6 +706,8 @@
                 .filter(t => t.isSprite)
                 .map(t => t.getName());
         }
+
+        // Vector Functions
 
         magnitude(args) {
             const lst = JSON.parse(args.VECTOR);
@@ -550,9 +750,13 @@
         }
 
         normal(args) {
-            const v = args.Vector
-            const size = Scratch.Cast.toString(JSON.parse(v).length) + 'D';
-            return this.divide({v,this.base({this.magnitude({v}), size})});
+            const v = JSON.parse(args.VECTOR);
+            const mag = simpleMagnitude(v);
+            var r = [];
+            for (let i = 0; i < v.length; i++) {
+                r.push(v[i]/mag);
+            }
+            return JSON.stringify(r);
         }
 
         distance(args) {
@@ -574,6 +778,18 @@
             return JSON.stringify(v[id]);
         }
 
+        setDimension(args) {
+            const v = JSON.parse(args.VECTOR);
+            const id = axis.indexOf(args.AXIS);
+            if (id+1 > v.length) {
+                return "Axis Does Not Exist";
+            }
+
+            v[id] = args.NUM;
+
+            return JSON.stringify(v);
+        }
+
         typeCheck(args) {
             const size = Scratch.Cast.toNumber(args.FORMAT[0]);
             const v = JSON.parse(args.VECTOR);
@@ -588,12 +804,14 @@
         vectorCheck(args) {
             const v = JSON.parse(args.VECTOR);
 
-            if (v.isArray()) {
+            if (Array.isArray(v)) {
                 return true;
             }
 
             return false;
         }
+
+        // General Operations
 
         add(args) {
             const v1 = JSON.parse(args.VECTOR1);
@@ -685,18 +903,147 @@
         }
 
         operation(args) {
-            const v = JSON.parse(args.VECTOR);
+            var v = JSON.parse(args.VECTOR);
             var lst = [];
             var op = args.OPERATIONS;
             if (args.OPERATIONS === "e^") {
                 op = "exp"
+            } else if (trig.includes(op)) {
+                v = toRadiansVector(v);
             }
+            const func = new Function('val', `return Math.${op}(val)`);
             for (let i = 0; i < v.length; i++) {
-                const r = eval("Math." + op + "(" + v[i].toString() + ")");
+                const r = func(v[i]);
                 lst.push(r);
             }
             return JSON.stringify(lst);
         }
+
+        // Advanced Operations
+
+        power(args) {
+            const v1 = JSON.parse(args.VECTOR1);
+            const v2 = JSON.parse(args.VECTOR2);
+            var r = [];
+            if (!checkLength(v1, v2)) {
+                return "Invalid Vector Types";
+            }
+
+            for (let i = 0; i < v1.length; i++) {
+                r.push(Math.pow(v1[i],v2[i]));
+            }
+            return JSON.stringify(r);
+        }
+
+        root(args) {
+            const v1 = JSON.parse(args.VECTOR1);
+            const v2 = JSON.parse(args.VECTOR2);
+            var r = [];
+
+            let mult = false;
+            if (!checkLength(v1, v2)) {
+                if (Array.isArray(v2)) {
+                    return "Invalid Vector Types";
+                } else {
+                    mult = true;
+                }
+            }
+            var inv = 1 / v2;
+            for (let i = 0; i < v1.length; i++) {
+                if (!mult) {
+                    inv = 1 / v2[i];
+                }
+                r.push(Math.pow(v1[i],inv));
+            }
+            return JSON.stringify(r);
+        }
+
+        negative(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                r.push(0 - v[i]);
+            }
+            return JSON.stringify(r);
+        }
+
+        sign(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                r.push(Math.sign(v[i]));
+            }
+            return JSON.stringify(r);
+        }
+
+        clamp(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                v[i] = Math.max(Math.min(args.B, v[i]), args.A);
+                r.push(v[i]);
+            }
+            return JSON.stringify(r);
+        }
+
+        map(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                const n = (v[i]-args.A)/(args.B-args.A);
+                v[i] = n*(args.D-args.C)+args.C;
+                r.push(v[i]);
+            }
+            return JSON.stringify(r);
+        }
+
+        truncOf(args) {
+            const v = JSON.parse(args.VECTOR);
+            const mult = Math.pow(10, args.NUM);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                r.push(Math.trunc(v[i]*mult)/mult);
+            }
+            return JSON.stringify(r);
+        }
+
+        trunc(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                r.push(Math.trunc(v[i]));
+            }
+            return JSON.stringify(r);
+        }
+
+        logOf(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            for (let i = 0; i < v.length; i++) {
+                r.push(Math.log(v[i])/Math.log(args.NUM));
+            }
+            return JSON.stringify(r);
+        }
+
+        trueTrig(args) {
+            const v = JSON.parse(args.VECTOR);
+            var r = [];
+
+            const func = new Function('val', `return Math.${args.TRIG}(val)`);
+            for (let i = 0; i < v.length; i++) {
+                r.push(func(v[i]));
+            }
+            return JSON.stringify(r);
+        }
+
+        // Camera
 
         setCamPos(args) {
             camera = JSON.parse(args.VECTOR);
@@ -719,13 +1066,15 @@
             return JSON.stringify(rotation);
         }
 
+        // 2D Vectors
+
         vector2D(args) {
             return JSON.stringify([args.X, args.Y]);
         }
 
         goto2D(args) {  
             const rt = Scratch.vm.runtime;
-            const sprite = rt.targets.find(t => t.getName() === args.MENU);
+            const sprite = rt.getEditingTarget();
 
             if (!sprite) return;
 
@@ -733,6 +1082,19 @@
 
             sprite.setXY(v[0], v[1]);
         }
+
+        pos(args) {
+            const rt = Scratch.vm.runtime;
+            const sprite = rt.getEditingTarget();
+
+            if (!sprite) return;
+
+            const v = [sprite.x, sprite.y];
+
+            return JSON.stringify(v);
+        }
+
+        // 3D Vectors
 
         vector3D(args) {
             return JSON.stringify([args.X, args.Y, args.Z]);
@@ -750,6 +1112,8 @@
             pos = simpleVec2(f*pos[0]*invZ, f*pos[1]*invZ);
             return JSON.stringify([pos[0], pos[1]]);
         }
+
+        // 4D Vectors
 
         vector4D(args) {
             return JSON.stringify([args.X, args.Y, args.Z, args.W]);
